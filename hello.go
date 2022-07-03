@@ -73,6 +73,22 @@ func deleteTask(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
+func updateTask(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	taskID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		fmt.Fprintf(w, "insert a valid id")
+		return
+	}
+	var updatedTask task
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "insert a valid task")
+	}
+
+	json.Unmarshal(reqBody, &updatedTask)
+
+}
 func getTasks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(tasks)
@@ -89,5 +105,6 @@ func main() {
 	router.HandleFunc("/tasks", createTask).Methods("POST")
 	router.HandleFunc("/tasks/{id}", getTask).Methods("GET")
 	router.HandleFunc("/tasks/{id}", deleteTask).Methods("DELETE")
+	router.HandleFunc("/tasks/{id}", updateTask).Methods("PUT")
 	http.ListenAndServe(":3000", router)
 }
